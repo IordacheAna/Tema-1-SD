@@ -180,7 +180,7 @@ for test in range(8):
         if sort == 4:
             lista_sortata = counting_sort(lista)
             print("Counting Sort: ")
-        # print(lista_sortata)
+        print(lista_sortata)
         if sortare_corecta(lista_sortata) == 0:
             print("Lista nu a fost sortata corect")
         else:
@@ -188,4 +188,3 @@ for test in range(8):
         stop = time.time()
         print(stop - start)
 
-print("Gata")
