@@ -1,0 +1,191 @@
+# T=8
+# N=100  MAX=10^5
+# N=10^5 MAX=100
+# N=10^5 MAX=10^5
+# N=10^3 MAX=10^7
+# N=10^7 MAX=10^3
+# N=10^4 MAX=10^4
+# N=10^4 MAX=10^5
+# N=10^5 MAX=10^4
+
+def counting_sort(lista):
+    aparitii = [0 for i in range(max(lista) + 1)]
+    for element in lista:
+        aparitii[element] += 1
+    for index in range(1, max(lista) + 1):
+        aparitii[index] += aparitii[index - 1]
+    rezultat = [0 for i in range(len(lista))]
+    for value in lista:
+        index = aparitii[value] - 1
+        rezultat[index] = value
+        aparitii[value] -= 1
+    return rezultat
+
+
+def merge_sort(lista):
+    if len(lista) > 1:
+        mijloc = len(lista) // 2
+        stanga = lista[:mijloc]
+        dreapta = lista[mijloc:]
+        merge_sort(stanga)
+        merge_sort(dreapta)
+        i = j = k = 0
+        while i < len(stanga) and j < len(dreapta):
+            if stanga[i] <= dreapta[j]:
+                lista[k] = stanga[i]
+                i += 1
+            else:
+                lista[k] = dreapta[j]
+                j += 1
+            k += 1
+        while i < len(stanga):
+            lista[k] = stanga[i]
+            i += 1
+            k += 1
+        while j < len(dreapta):
+            lista[k] = dreapta[j]
+            j += 1
+            k += 1
+    return lista
+
+
+def shell_sort(lista):
+    lungime = len(lista)
+    interval = lungime // 2
+    while interval > 0:
+        for i in range(interval, lungime):
+            element = lista[i]
+            j = i
+            while j >= interval and lista[j - interval] > element:
+                lista[j] = lista[j - interval]
+                j = j - interval
+            lista[j] = element
+        interval = interval // 2
+    return lista
+
+
+def impartire(lista, stanga, dreapta):
+    pivot = lista[(stanga + dreapta) // 2]
+    i = stanga - 1
+    j = dreapta + 1
+    while True:
+        i += 1
+        while lista[i] < pivot:
+            i += 1
+        j -= 1
+        while lista[j] > pivot:
+            j -= 1
+        if i >= j:
+            return j
+        lista[i], lista[j] = lista[j], lista[i]
+
+
+def quick_sort(lista):
+    def _quick_sort(lista, stanga, dreapta):
+        if stanga < dreapta:
+            index = impartire(lista, stanga, dreapta)
+            _quick_sort(lista, stanga, index)
+            _quick_sort(lista, index + 1, dreapta)
+
+    _quick_sort(lista, 0, len(lista) - 1)
+    return lista
+
+
+def counting_sort_radix(lista, index_cifra):
+    lungime = len(lista)
+    rezultat = [0] * lungime
+    aparitii = [0] * 10
+    for i in range(0, lungime):
+        index = lista[i] // index_cifra
+        aparitii[index % 10] += 1
+    for i in range(1, 10):
+        aparitii[i] += aparitii[i - 1]
+    i = lungime - 1
+    while i >= 0:
+        index = lista[i] // index_cifra
+        rezultat[aparitii[index % 10] - 1] = lista[i]
+        aparitii[index % 10] -= 1
+        i -= 1
+    for i in range(0, lungime):
+        lista[i] = rezultat[i]
+
+
+def radix_sort(lista):
+    maximul = max(lista)
+    index_cifra = 1
+    while maximul // index_cifra > 0:
+        counting_sort_radix(lista, index_cifra)
+        index_cifra *= 10
+    return lista
+
+
+def sortare_corecta(lista):
+    for i in range(len(lista) - 1):
+        if lista[i] > lista[i + 1]:
+            return 0
+    return 1
+
+
+import random
+import time
+
+for test in range(8):
+    lista = []
+    if test == 0:
+        for i in range(100):
+            lista.append(random.randint(0, 100000))
+        print("Testul ", test + 1, ":")
+    if test == 1:
+        for i in range(100000):
+            lista.append(random.randint(0, 100))
+        print("Testul ", test + 1, ":")
+    if test == 2:
+        for i in range(100000):
+            lista.append(random.randint(0, 100000))
+        print("Testul ", test + 1, ":")
+    if test == 3:
+        for i in range(1000):
+            lista.append(random.randint(0, 10000000))
+        print("Testul ", test + 1, ":")
+    if test == 4:
+        for i in range(10000000):
+            lista.append(random.randint(0, 1000))
+        print("Testul ", test + 1, ":")
+    if test == 5:
+        for i in range(10000):
+            lista.append(random.randint(0, 10000))
+        print("Testul ", test + 1, ":")
+    if test == 6:
+        for i in range(10000):
+            lista.append(random.randint(0, 100000))
+        print("Testul ", test + 1, ":")
+    if test == 7:
+        for i in range(100000):
+            lista.append(random.randint(0, 10000))
+        print("Testul ", test + 1, ":")
+    for sort in range(5):
+        start = time.time()
+        if sort == 0:
+            lista_sortata = radix_sort(lista)
+            print("Radix Sort: ")
+        if sort == 1:
+            lista_sortata = merge_sort(lista)
+            print("Merge Sort: ")
+        if sort == 2:
+            lista_sortata = shell_sort(lista)
+            print("Shell Sort: ")
+        if sort == 3:
+            lista_sortata = quick_sort(lista)
+            print("Quick Sort: ")
+        if sort == 4:
+            lista_sortata = counting_sort(lista)
+            print("Counting Sort: ")
+        # print(lista_sortata)
+        if sortare_corecta(lista_sortata) == 0:
+            print("Lista nu a fost sortata corect")
+        else:
+            print("Lista a fost sortata corect")
+        stop = time.time()
+        print(stop - start)
+
+print("Gata")
